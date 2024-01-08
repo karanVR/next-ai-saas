@@ -11,12 +11,12 @@ import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import { ChatCompletionRequestMessage } from "openai";
+import ChatCompletionRequestMessage, { OpenAI } from "openai";
 import axios from "axios";
 
 const ConversationPage = () => {
   const router = useRouter();
-  const [messages, setMessages] = useState<ChatCompletionRequestMessage[]>([]);
+  const [messages, setMessages] = useState<any>([]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -32,7 +32,7 @@ const ConversationPage = () => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const userMessage: ChatCompletionRequestMessage = {
+      const userMessage: OpenAI.Chat.ChatCompletionMessageParam = {
         role: "user",
         content: values.prompt,
       };
@@ -45,7 +45,7 @@ const ConversationPage = () => {
       });
       console.log(response.data, "resp.data");
 
-      setMessages((current) => [...current, userMessage, response.data]);
+      setMessages((current: any) => [...current, userMessage, response.data]);
       form.reset();
     } catch (error) {
       console.log(error);
@@ -96,7 +96,7 @@ const ConversationPage = () => {
         </div>
         <div className="">
           <div className="flex-col-reverse gap-y-4">
-            {messages.map((message) => (
+            {messages.map((message: any) => (
               <div key={message.content}>{message.content}</div>
             ))}
           </div>
