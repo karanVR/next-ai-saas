@@ -13,6 +13,11 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import ChatCompletionRequestMessage, { OpenAI } from "openai";
 import axios from "axios";
+import Empty from "@/components/empty";
+import Loader from "@/components/loader";
+import { cn } from "@/lib/utils";
+import UserAvatar from "@/components/user-avatar";
+import BotAvatar from "@/components/bot-avatar";
 
 const ConversationPage = () => {
   const router = useRouter();
@@ -64,11 +69,11 @@ const ConversationPage = () => {
         iconColor="text-violet-500"
       />
       <div className="px-4 lg:px-8">
-        <div className="">
+        <div className="mb-4">
           <Form {...form}>
             <form
               onSubmit={handleSubmit(onSubmit)}
-              className="flex justify-between md:flex-col  rounded-lg border w-full p-4 px-3 md:px-6 focus-within:shadow-sm"
+              className="flex justify-between md:flex md:flex-col  rounded-lg border w-full p-4 px-3 md:px-6 focus-within:shadow-sm"
             >
               <FormField
                 name="prompt"
@@ -94,10 +99,29 @@ const ConversationPage = () => {
             </form>
           </Form>
         </div>
+        {isLoading && (
+          <div className="p-8 rounded-lg w-full flex items-center justify-center bg-muted">
+            <Loader />
+          </div>
+        )}
+        {!isLoading && messages.length === 0 && (
+          <Empty label="Ask a question" />
+        )}
         <div className="">
-          <div className="flex-col-reverse gap-y-4">
+          <div className=" flex flex-col-reverse gap-y-4">
             {messages.map((message: any) => (
-              <div key={message.content}>{message.content}</div>
+              <div
+                key={message.content}
+                className={cn(
+                  "p-8 w-full flex items-start gap-x-8 rounded-lg ",
+                  message.role === "user"
+                    ? "bg-white border border-black/10"
+                    : "bg-muted"
+                )}
+              >
+                {message.role === "user" ? <UserAvatar /> : <BotAvatar />}
+                <p className="text-sm">{message.content}</p>
+              </div>
             ))}
           </div>
         </div>
